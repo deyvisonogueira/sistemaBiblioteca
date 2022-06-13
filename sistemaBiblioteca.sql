@@ -27,7 +27,7 @@ CREATE TABLE IF NOT EXISTS `atendente` (
   PRIMARY KEY (`idATENDENTE`)
 ) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=latin1;
 
--- Copiando dados para a tabela sistemabiblioteca.atendente: ~3 rows (aproximadamente)
+-- Copiando dados para a tabela sistemabiblioteca.atendente: ~4 rows (aproximadamente)
 /*!40000 ALTER TABLE `atendente` DISABLE KEYS */;
 INSERT INTO `atendente` (`idATENDENTE`, `nome`, `cpf`, `endereco`) VALUES
 	(1, 'Maria Prado', '111.111.111-11', 'RUA A'),
@@ -72,7 +72,7 @@ CREATE TABLE IF NOT EXISTS `emprestimo` (
   CONSTRAINT `fk_LEITOR_has_LIVRO_LIVRO1` FOREIGN KEY (`LIVRO_idLIVRO`) REFERENCES `livro` (`idLIVRO`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
--- Copiando dados para a tabela sistemabiblioteca.emprestimo: ~2 rows (aproximadamente)
+-- Copiando dados para a tabela sistemabiblioteca.emprestimo: ~3 rows (aproximadamente)
 /*!40000 ALTER TABLE `emprestimo` DISABLE KEYS */;
 INSERT INTO `emprestimo` (`LEITOR_idLEITOR`, `LIVRO_idLIVRO`, `ATENDENTE_idATENDENTE`, `dataEmprestimo`, `dataPrevistaDev`, `dataRealDev`) VALUES
 	(1, 1, 2, '2022-05-06', '2022-07-06', '2022-07-10'),
@@ -118,15 +118,16 @@ CREATE TABLE IF NOT EXISTS `leitor` (
   `endereco` varchar(45) NOT NULL,
   `telefone` varchar(45) DEFAULT NULL,
   PRIMARY KEY (`idLEITOR`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=latin1;
 
--- Copiando dados para a tabela sistemabiblioteca.leitor: ~4 rows (aproximadamente)
+-- Copiando dados para a tabela sistemabiblioteca.leitor: ~5 rows (aproximadamente)
 /*!40000 ALTER TABLE `leitor` DISABLE KEYS */;
 INSERT INTO `leitor` (`idLEITOR`, `nome`, `cpf`, `endereco`, `telefone`) VALUES
 	(1, 'Deyvison Nogueira', '111.111.222-22', 'RUA ALMEIDA', NULL),
 	(2, 'Maria Fernanda Gonçalves', '222.222.111-11', 'RUA BARROCA', '(11) 91111-1111'),
 	(3, 'Carlos Albertos Maia', '333.333.222-11', 'RUA CARVALHO', '(31) 92222-2222'),
-	(4, 'Daniel Santos', '444.444.444-44', 'RUA DAMASCO', NULL);
+	(4, 'Daniel Santos', '444.444.444-44', 'RUA DAMASCO', NULL),
+	(5, 'Leonardo Gonçalves', '111.111.111-11', 'Rua das Amoras, 22 - Centro', '(35) 3267-3283');
 /*!40000 ALTER TABLE `leitor` ENABLE KEYS */;
 
 -- Copiando estrutura para tabela sistemabiblioteca.livro
@@ -141,7 +142,7 @@ CREATE TABLE IF NOT EXISTS `livro` (
   PRIMARY KEY (`idLIVRO`,`GENERO_idGENERO`),
   KEY `fk_LIVRO_GENERO1_idx` (`GENERO_idGENERO`),
   CONSTRAINT `fk_LIVRO_GENERO1` FOREIGN KEY (`GENERO_idGENERO`) REFERENCES `genero` (`idGENERO`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=latin1;
 
 -- Copiando dados para a tabela sistemabiblioteca.livro: ~4 rows (aproximadamente)
 /*!40000 ALTER TABLE `livro` DISABLE KEYS */;
@@ -163,6 +164,36 @@ CREATE TABLE `mostra_livros_escritos_por_jojomoyes` (
 	`disponibilidade` TINYINT(1) NOT NULL,
 	`GENERO_idGENERO` INT(11) NOT NULL
 ) ENGINE=MyISAM;
+
+-- Copiando estrutura para procedure sistemabiblioteca.rotina_detalhar_leitor
+DROP PROCEDURE IF EXISTS `rotina_detalhar_leitor`;
+DELIMITER //
+CREATE PROCEDURE `rotina_detalhar_leitor`(
+	IN `id` INT
+)
+BEGIN
+SELECT @contador:= COUNT(*) FROM leitor
+WHERE idLEITOR = id;
+if (@contador = 1)
+    then SELECT * FROM leitor WHERE idLEITOR = id;
+    ELSE SELECT "Leitor não encontrado" AS ERRO;
+END if;
+END//
+DELIMITER ;
+
+-- Copiando estrutura para procedure sistemabiblioteca.rotina_inserir_leitor
+DROP PROCEDURE IF EXISTS `rotina_inserir_leitor`;
+DELIMITER //
+CREATE PROCEDURE `rotina_inserir_leitor`(
+	IN `nome` VARCHAR(200),
+	IN `cpf` VARCHAR(20),
+	IN `endereco` VARCHAR(200),
+	IN `telefone` VARCHAR(20)
+)
+BEGIN
+INSERT INTO leitor VALUES(NULL, nome, cpf, endereco, telefone);
+END//
+DELIMITER ;
 
 -- Copiando estrutura para trigger sistemabiblioteca.formataNomeAtendente
 DROP TRIGGER IF EXISTS `formataNomeAtendente`;
